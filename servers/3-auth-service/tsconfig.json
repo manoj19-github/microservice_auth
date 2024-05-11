@@ -1,0 +1,42 @@
+{
+	"compilerOptions": {
+		"target": "ES2021",
+		"module": "CommonJS",
+		"strict": true,
+		"outDir": "dist",
+		"rootDir": ".",
+		"esModuleInterop": true,
+
+		"skipLibCheck": true,
+		"resolveJsonModule": true,
+		"declaration": true,
+		"forceConsistentCasingInFileNames": true,
+		"sourceMap": true,
+		"incremental": true,
+		"baseUrl": ".",
+		"plugins": [
+			{
+				"transform": "typescript-transform-paths"
+			},
+			{
+				"transform": "typescript-transform-paths",
+				"afterDeclarations": true
+			}
+		],
+		// "paths": {
+		// 	"@/controllers/*": ["http/controllers/*"],
+		// 	"@/middlewares/*": ["http/middlewares/*"],
+		// 	"@/dtos/*": ["http/dtos/*"],
+		// 	"@/services/*": ["http/services/*"],
+		// 	"@/interfaces/*": ["interfaces/*"],
+		// 	"@/schema/*": ["schema/*"],
+		// 	"@/routes/*": ["routes/*"],
+		// 	"@/lib/*": ["lib/*"],
+		// 	"@/config/*": ["config/*"],
+		// 	"@/types/*": ["types/*"],
+		// 	"@/utils/*": ["utils/*"]
+		// }
+	},
+	"include": ["src"],
+	"exclude": ["node_modules"]
+  }

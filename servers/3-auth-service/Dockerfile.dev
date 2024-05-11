@@ -1,0 +1,34 @@
+FROM node:21-alpine3.18
+
+ENV APP_HOME="/app"
+
+WORKDIR /app
+
+COPY package*.json ./
+
+COPY tsconfig.json ./
+
+COPY .npmrc ./
+
+COPY src ./src
+
+# COPY tools ./tools
+
+RUN ls -a
+
+RUN npm install && npm install -g nodemon
+
+EXPOSE 4002
+
+CMD ["npm","run","dev"]
+
+
+
+
+
+
+
+
+
+# Run
+# CMD [ "npm", "start" ]
