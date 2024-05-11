@@ -40,7 +40,7 @@ RUN npm ci --production
 
 COPY --from=builder /app/dist ./dist
 
-EXPOSE 4002
+EXPOSE 4003
 
 
 CMD [ "npm", "start" ]

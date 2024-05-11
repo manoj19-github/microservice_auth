@@ -18,7 +18,7 @@ RUN ls -a
 
 RUN npm install && npm install -g nodemon
 
-EXPOSE 4002
+EXPOSE 4003
 
 CMD ["npm","run","dev"]
 

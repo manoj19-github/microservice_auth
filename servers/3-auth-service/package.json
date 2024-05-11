@@ -6,7 +6,7 @@
 	"license": "MIT",
 	"dependencies": {
 		"@elastic/elasticsearch": "^8.13.1",
-		"@manoj19-github/microservice_shared": "^0.0.73",
+		"@manoj19-github/microservice_shared": "0.0.75",
 		"axios": "^1.6.8",
 		"bcrypt": "^5.1.1",
 		"compression": "^1.7.4",
@@ -21,8 +21,10 @@
 		"jsonwebtoken": "^9.0.2",
 		"mongoose": "^6.9.0",
 		"morgan": "^1.10.0",
+		"mysql2": "^3.9.7",
 		"pino-pretty": "^11.0.0",
 		"pm2": "^5.3.1",
+		"sequelize": "^6.37.3",
 		"shelljs": "^0.8.5",
 		"typescript-transform-paths": "^3.4.7",
 		"winston": "^3.13.0"

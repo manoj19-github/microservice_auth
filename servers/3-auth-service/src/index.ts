@@ -19,7 +19,7 @@ import { winstonLogger } from '@manoj19-github/microservice_shared';
 import hpp from 'hpp';
 import compression from 'compression';
 config();
-class APIGatewayServer {
+class AuthServer {
 	private app: Application;
 	private PORT: unknown;
 	private routesMain = new RoutesMain();
@@ -108,5 +108,5 @@ class APIGatewayServer {
 	}
 }
 
-const server = new APIGatewayServer();
+const server = new AuthServer();
 server.listen();

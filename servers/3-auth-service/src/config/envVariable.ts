@@ -12,15 +12,18 @@ export class EnvVariable {
 	public static ELASTIC_APM_SERVER_URL = process.env.ELASTIC_APM_SERVER_URL;
 	public static ELASTIC_APM_SECRET_TOKEN = process.env.ELASTIC_APM_SECRET_TOKEN;
 	public static EMAIL_QUEUE_EXCHANGE_NAME = process.env.EMAIL_QUEUE_EXCHANGE_NAME;
+	public static API_GATEWAY_URL = process.env.API_GATEWAY_URL;
+	public static NEXT_PUBLIC_GITHUB_CLIENT_ID = process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID;
+	public static NEXT_PUBLIC_GITHUB_CLIENT_SECRET = process.env.NEXT_PUBLIC_GITHUB_CLIENT_SECRET;
+	public static NEXT_PUBLIC_GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+	public static NEXT_PUBLIC_GOOGLE_CLIENT_SECRET = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_SECRET;
+	public static NEXT_PUBLIC_COUDINARY_CLOUD_NAME = process.env.NEXT_PUBLIC_COUDINARY_CLOUD_NAME;
+	public static NEXT_PUBLIC_COUDINARY_API_KEY = process.env.NEXT_PUBLIC_COUDINARY_API_KEY;
+	public static NEXT_PUBLIC_CLOUDINARY_API_SECRET = process.env.NEXT_PUBLIC_CLOUDINARY_API_SECRET;
+	public static NEXT_PUBLIC_CLOUDINARY_URL = process.env.NEXT_PUBLIC_CLOUDINARY_URL;
 	public static GATEWAY_JWT_TOKEN = process.env.GATEWAY_JWT_TOKEN;
 	public static JWT_TOKEN = process.env.JWT_TOKEN;
-	public static SECRET_KEY_ONE = process.env.SECRET_KEY_ONE;
-	public static SECRET_KEY_TWO = process.env.SECRET_KEY_TWO;
-	public static AUTH_BASE_URL = process.env.AUTH_BASE_URL;
-	public static USERS_BASE_URL = process.env.USERS_BASE_URL;
-	public static GIG_BASE_URL = process.env.GIG_BASE_URL;
-	public static MESSAGE_BASE_URL = process.env.MESSAGE_BASE_URL;
-	public static ORDER_BASE_URL = process.env.ORDER_BASE_URL;
-	public static REVIEW_BASE_URL = process.env.REVIEW_BASE_URL;
 	public static REDIS_HOST = process.env.REDIS_HOST;
+	public static MYSQL_DB = process.env.MYSQL_DB;
+	public static PORT=process.env.PORT;
 }
