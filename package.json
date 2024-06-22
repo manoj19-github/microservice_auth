@@ -6,7 +6,7 @@
 	"license": "MIT",
 	"dependencies": {
 		"@elastic/elasticsearch": "^8.13.1",
-		"@manoj19-github/microservice_shared": "0.0.75",
+		"@manoj19-github/microservice_shared_lib": "^0.0.4",
 		"axios": "^1.6.8",
 		"bcrypt": "^5.1.1",
 		"compression": "^1.7.4",

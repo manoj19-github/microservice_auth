@@ -1,8 +1,5 @@
-node_modules/
-.env
+node_modules
 .DS_Store
 dist
 build
 .npmrc
-docker-volumes
-secrets.md

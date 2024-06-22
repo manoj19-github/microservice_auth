@@ -25,5 +25,7 @@ export class EnvVariable {
 	public static JWT_TOKEN = process.env.JWT_TOKEN;
 	public static REDIS_HOST = process.env.REDIS_HOST;
 	public static MYSQL_DB = process.env.MYSQL_DB;
-	public static PORT=process.env.PORT;
+	public static PORT = process.env.PORT;
+	public static SECRET_KEY_ONE = process.env.SECRET_KEY_ONE;
+	public static SECRET_KEY_TWO = process.env.SECRET_KEY_TWO;
 }
