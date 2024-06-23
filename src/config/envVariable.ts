@@ -28,4 +28,5 @@ export class EnvVariable {
 	public static PORT = process.env.PORT;
 	public static SECRET_KEY_ONE = process.env.SECRET_KEY_ONE;
 	public static SECRET_KEY_TWO = process.env.SECRET_KEY_TWO;
+	public static MONGODB_DATABASE_URL = process.env.MONGODB_DATABASE_URL;
 }

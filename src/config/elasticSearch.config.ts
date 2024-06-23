@@ -15,11 +15,11 @@ export async function checkElasticSearchConnection(): Promise<void> {
 	while (!isConnected) {
 		try {
 			const health: ClusterHealthResponse = await ElasticSearchClient.cluster.health({});
-			logger.info(`GatewayService Elasticsearch health status  - ${health.status}`);
+			logger.info(`AuthService Elasticsearch health status  - ${health.status}`);
 			isConnected = true;
 		} catch (error) {
-			logger.error(`Connection to Elasticsearch is failed. in GatewayService Retrying ...............`);
-			logger.log(`error`, `GatewayService Server checkElasticSearchConnection method :`, error);
+			logger.error(`Connection to Elasticsearch is failed. in auth service Retrying ...............`);
+			logger.log(`error`, `AuthService  checkElasticSearchConnection method :`, error);
 		}
 	}
 }

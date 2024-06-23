@@ -18,6 +18,8 @@ import { checkElasticSearchConnection } from './config/elasticSearch.config';
 import { winstonLogger } from '@manoj19-github/microservice_shared_lib';
 import hpp from 'hpp';
 import compression from 'compression';
+import { ConnectDatabase } from './config/database.config';
+import { authMiddleware } from './middlewares/auth-middleware';
 config();
 class AuthServer {
 	private app: Application;
@@ -43,10 +45,13 @@ class AuthServer {
 			})
 		); // max age is 1 day or 24 hour
 		this.app.use(hpp());
-		this.app.use(cors({ credentials: true, origin: `${EnvVariable.CLIENT_URL}`, methods: ['GET', 'POST', 'OPTIONS', 'DELETE', 'PUT'] }));
+		this.app.use(
+			cors({ credentials: true, origin: `${EnvVariable.API_GATEWAY_URL}`, methods: ['GET', 'POST', 'OPTIONS', 'DELETE', 'PUT'] })
+		);
 
 		this.app.use(helmet());
 		this.app.use(morgan('dev'));
+		this.app.use(authMiddleware.verifyUser);
 	}
 	private standardMiddleware(): void {
 		this.app.use(compression());
@@ -97,10 +102,13 @@ class AuthServer {
 			const httpServer: http.Server = new http.Server(this.app);
 			this.logger.info(`worker with process id of ${process.pid} of auth  serVer has started`);
 			httpServer.listen(this.PORT, () => {
+				(async () => {
+					await ConnectDatabase();
+				})();
+
 				this.logger.info(`Gateway Server running on port ${this.PORT}`);
 			});
 		} catch (error) {
-			VTTRegion;
 			this.logger.log('error', 'AUTH Service start Server error : ', error);
 		}
 	}

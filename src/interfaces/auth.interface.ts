@@ -6,3 +6,7 @@ export interface IUser {
 	_id: string;
 	email: string;
 }
+
+export interface IUserAuthenticateMethods {
+	authenticate(password: string): Promise<boolean>;
+}

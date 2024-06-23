@@ -6,9 +6,10 @@ import { EnvVariable } from '../config/envVariable';
 class AuthMiddleware {
 	public verifyUser(request: Request, res: Response, next: NextFunction): void {
 		try {
-			if (!request.session?.jwt)
+			if (!request.headers.authorization)
 				throw new NotAuthorizedError('Token not avilable. Please login again', 'Gateway service verifyuser method error');
-			const payload: IAuthPayload = JWT.verify(request.session.jwt, `${EnvVariable.JWT_TOKEN}`) as IAuthPayload;
+			const token = request.headers.authorization;
+			const payload: IAuthPayload = JWT.verify(token, `${EnvVariable.JWT_TOKEN}`) as IAuthPayload;
 			request.currentUser = payload;
 			next();
 		} catch (error) {
