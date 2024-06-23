@@ -1,12 +1,16 @@
 import { Routes } from '../interfaces/routes.interface';
 import { Application } from 'express';
+import { AuthRoutes } from './auth.route';
+import { verifyGatewayRequest } from '@manoj19-github/microservice_shared_lib';
 
 class RoutesMain {
-	private routes: Routes[] = []; // add all routes  here
+	private path: string = `/api/v1/`;
+	private routes: Routes[] = [new AuthRoutes()]; // add all routes  here
+
 	constructor() {}
 	public initializeAllRoutes(app: Application) {
 		this.routes.forEach((route) => {
-			app.use('/api-gateway/', route.router);
+			app.use(this.path, verifyGatewayRequest, route.router);
 		});
 	}
 }

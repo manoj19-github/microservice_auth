@@ -3,7 +3,7 @@ import { NextFunction, Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { ObjectSchema } from 'joi';
 
-export const APIPayloadValidation = (schema: ObjectSchema) => async (request: Request, response: Response, next: NextFunction) => {
+export const payloadValidator = (schema: ObjectSchema) => async (request: Request, response: Response, next: NextFunction) => {
 	const { error } = await Promise.resolve(schema.validate(request.body));
 	if (!!error && error?.details)
 		return response.status(StatusCodes.BAD_REQUEST).json({
