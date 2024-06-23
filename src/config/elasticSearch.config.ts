@@ -1,5 +1,5 @@
 import { Client } from '@elastic/elasticsearch';
-import { EnvVariable } from './envVariable';
+import { EnvVariable } from './envVariable.config';
 import { Logger } from 'winston';
 import { ClusterHealthResponse } from '@elastic/elasticsearch/lib/api/types';
 import { winstonLogger } from '@manoj19-github/microservice_shared_lib';

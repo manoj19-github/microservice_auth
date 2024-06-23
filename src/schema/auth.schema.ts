@@ -10,7 +10,8 @@ const AuthSchema = new Mongoose.Schema<IAuthDocument, AuthModelType, IUserAuthen
 		username: {
 			type: String,
 			required: true,
-			trim: true
+			trim: true,
+			unique: true
 		},
 		password: {
 			type: String,
@@ -40,6 +41,7 @@ const AuthSchema = new Mongoose.Schema<IAuthDocument, AuthModelType, IUserAuthen
 		},
 		emailVerificationToken: {
 			type: String,
+
 			required: false
 		},
 		emailVerified: {
@@ -71,5 +73,5 @@ AuthSchema.methods = {
 		return await bcrypt.compare(password, String(this.password));
 	}
 };
-const AuthDataModel = Mongoose.model('Auth', AuthSchema);
+const AuthDataModel: any = Mongoose.model('Auth', AuthSchema);
 export default AuthDataModel;

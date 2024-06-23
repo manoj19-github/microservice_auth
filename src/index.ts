@@ -9,7 +9,7 @@ import cookieSession from 'cookie-session';
 import { errorHandler, notFound } from './middlewares/errorHandler.middleware';
 import RoutesMain from './routes';
 import { Logger } from 'winston';
-import { EnvVariable } from './config/envVariable';
+import { EnvVariable } from './config/envVariable.config';
 import { StatusCodes } from 'http-status-codes';
 import { checkElasticSearchConnection } from './config/elasticSearch.config';
 
@@ -20,12 +20,17 @@ import hpp from 'hpp';
 import compression from 'compression';
 import { ConnectDatabase } from './config/database.config';
 import { authMiddleware } from './middlewares/auth-middleware';
+import { Channel } from 'amqplib';
+import { RabbitMQConfig } from './config/rabbitmq.config';
 config();
+
+export let authChannel: Channel | undefined;
 class AuthServer {
 	private app: Application;
 	private PORT: unknown;
 	private routesMain = new RoutesMain();
 	private logger: Logger;
+
 	constructor() {
 		this.logger = winstonLogger(`${EnvVariable.ELASTIC_SEARCH_URL}`, 'GatewayServer', 'debug');
 		this.app = express();
@@ -64,36 +69,36 @@ class AuthServer {
 		});
 		this.routesMain.initializeAllRoutes(this.app);
 
-		// put this at the last of all routes
+		// API Routes Error Handler
 		this.app.use(notFound);
 		this.app.use(errorHandler);
 	}
 	public listen(): void {
 		this.startServer();
-		// this.startQueue();
+		this.startQueue();
 		this.startElasticSearch();
 	}
-	// private async startQueue(): Promise<void> {
-	// 	const emailChannel:Channel = await QueueConnection.createConnection() as Channel;
-	// 	await EmailConsumer.consumeAuthEmailMessages(emailChannel);
-	// 	await EmailConsumer.consumeOrderEmailMessages(emailChannel);
-	// 	await emailChannel.assertExchange(String(EnvVariable.EMAIL_QUEUE_EXCHANGE_NAME),'direct');
-	// 	const routingKey = 'auth-email-notification';
-	//     const queueName = 'auth-email-queue';
-	// 	const messages1 = JSON.stringify({name:"Auth Email",service:"Auth Notification service"})
-	// 	emailChannel.publish(String(EnvVariable.EMAIL_QUEUE_EXCHANGE_NAME),routingKey,Buffer.from(messages1));
+	private async startQueue(): Promise<void> {
+		authChannel = (await RabbitMQConfig.createConnection()) as Channel;
 
-	// 	// const messages2:any = {
-	// 	// 	verifyLink:`${EnvVariable.CLIENT_URL}/confirm_email?v_token=4343edferfde4343`,
-	// 	// 	receiverEmail:`${EnvVariable.SENDER_EMAIL}`,
-	// 	// 	template:'verifyEmail/html.ejs',
-	// 	// 	subject:"test email"
+		// await EmailConsumer.consumeAuthEmailMessages(emailChannel);
+		// await EmailConsumer.consumeOrderEmailMessages(emailChannel);
+		// await emailChannel.assertExchange(String(EnvVariable.EMAIL_QUEUE_EXCHANGE_NAME),'direct');
+		// const routingKey = 'auth-email-notification';
+		//   const queueName = 'auth-email-queue';
+		// const messages1 = JSON.stringify({name:"Auth Email",service:"Auth Notification service"})
+		// emailChannel.publish(String(EnvVariable.EMAIL_QUEUE_EXCHANGE_NAME),routingKey,Buffer.from(messages1));
 
-	// 	// }
-	// 	// await emailChannel.assertExchange('jobber-order-notification','direct');
-	// 	// emailChannel.publish('jobber-order-notification','order-email',Buffer.from(JSON.stringify(messages2)));
+		// const messages2:any = {
+		// 	verifyLink:`${EnvVariable.CLIENT_URL}/confirm_email?v_token=4343edferfde4343`,
+		// 	receiverEmail:`${EnvVariable.SENDER_EMAIL}`,
+		// 	template:'verifyEmail/html.ejs',
+		// 	subject:"test email"
 
-	// }
+		// }
+		// await emailChannel.assertExchange('jobber-order-notification','direct');
+		// emailChannel.publish('jobber-order-notification','order-email',Buffer.from(JSON.stringify(messages2)));
+	}
 	private async startElasticSearch(): Promise<void> {
 		await checkElasticSearchConnection();
 	}

@@ -1,7 +1,7 @@
 import { BadRequestError, IAuthPayload, NotAuthorizedError } from '@manoj19-github/microservice_shared_lib';
 import { NextFunction, Response, Request } from 'express';
 import JWT from 'jsonwebtoken';
-import { EnvVariable } from '../config/envVariable';
+import { EnvVariable } from '../config/envVariable.config';
 
 class AuthMiddleware {
 	public verifyUser(request: Request, res: Response, next: NextFunction): void {

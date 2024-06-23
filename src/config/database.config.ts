@@ -1,6 +1,6 @@
 import { winstonLogger } from '@manoj19-github/microservice_shared_lib';
 import { Logger } from 'winston';
-import { EnvVariable } from './envVariable';
+import { EnvVariable } from './envVariable.config';
 import mongoose from 'mongoose';
 const logger: Logger = winstonLogger(`${EnvVariable.ELASTIC_SEARCH_URL}`, 'AUTH service Mongo db connection container', 'debug');
 
