@@ -22,6 +22,7 @@ import { ConnectDatabase } from './config/database.config';
 import { authMiddleware } from './middlewares/auth.middleware';
 import { Channel } from 'amqplib';
 import { RabbitMQConfig } from './config/rabbitmq.config';
+import { cloudinaryConfig } from './config/c.loudinary.config';
 config();
 
 export let authChannel: Channel | undefined;
@@ -35,9 +36,13 @@ class AuthServer {
 		this.logger = winstonLogger(`${EnvVariable.ELASTIC_SEARCH_URL}`, 'GatewayServer', 'debug');
 		this.app = express();
 		this.PORT = process.env.PORT ?? 5000;
+		this.generalConfiguration();
 		this.securityMiddleware();
 		this.standardMiddleware();
 		this.routesMiddleware();
+	}
+	private generalConfiguration(): void {
+		cloudinaryConfig();
 	}
 	private securityMiddleware(): void {
 		this.app.set(`trust proxy`, 1);

@@ -12,9 +12,9 @@ import {
 import { v4 as uuidV4 } from 'uuid';
 import { UploadApiResponse } from 'cloudinary';
 import crypto from 'node:crypto';
-import { EnvVariable } from 'src/config/envVariable.config';
-import { AuthProducerQueue } from 'src/queues/authProducer.queue';
-import { authChannel } from 'src';
+import { EnvVariable } from '../config/envVariable.config';
+import { AuthProducerQueue } from '../queues/authProducer.queue';
+import { authChannel } from '..';
 import { StatusCodes } from 'http-status-codes';
 
 export class AuthController {
@@ -37,6 +37,7 @@ export class AuthController {
 				profilePicture: uploadResult?.secure_url ?? '',
 				emailVerificationToken: randomString
 			} as IAuthDocument;
+
 			const result: IAuthDocument | undefined = await AuthService.createAuthUser(payload);
 			if (!result) throw new ServerError('user not created', 'Something went wrong');
 			const verifyLink: string = `${EnvVariable.CLIENT_URL}/confirm_email?v_token=${randomString}`;
@@ -60,7 +61,6 @@ export class AuthController {
 				JWTToken
 			});
 		} catch (error) {
-			console.log('error in createUser of AuthController', error);
 			next(error);
 		}
 	}

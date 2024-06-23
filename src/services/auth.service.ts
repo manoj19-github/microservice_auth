@@ -24,6 +24,7 @@ export class AuthService {
 				logMessage: `Buyer Details sent to buyer service`
 			});
 		const userData: IAuthDocument = lodash.omit(authResult, ['password']) as IAuthDocument;
+
 		return userData;
 	}
 	public static async getAuthUserById(authId: string): Promise<IAuthDocument | undefined> {
@@ -74,7 +75,7 @@ export class AuthService {
 		userId: string;
 		emailVerified: boolean;
 		emailVerifiedToken: string;
-	}): Promise<undefined> {
+	}) {
 		await AuthDataModel.updateOne(
 			{ _id: userId },
 			{
@@ -85,15 +86,7 @@ export class AuthService {
 			}
 		);
 	}
-	public static async updatePasswordToken({
-		userId,
-		token,
-		tokenExpiration
-	}: {
-		userId: string;
-		token: boolean;
-		tokenExpiration: Date;
-	}): Promise<undefined> {
+	public static async updatePasswordToken({ userId, token, tokenExpiration }: { userId: string; token: boolean; tokenExpiration: Date }) {
 		await AuthDataModel.updateOne(
 			{ _id: userId },
 			{
@@ -104,7 +97,7 @@ export class AuthService {
 			}
 		);
 	}
-	public static async updatePassword({ userId, password }: { userId: string; password: string }): Promise<undefined> {
+	public static async updatePassword({ userId, password }: { userId: string; password: string }) {
 		await AuthDataModel.updateOne(
 			{ _id: userId },
 			{
