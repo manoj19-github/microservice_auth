@@ -10,6 +10,7 @@
 		"amqplib": "^0.10.4",
 		"axios": "^1.6.8",
 		"bcrypt": "^5.1.1",
+		"cloudinary": "^2.2.0",
 		"compression": "^1.7.4",
 		"cookie-session": "^2.1.0",
 		"cors": "^2.8.5",
@@ -30,6 +31,7 @@
 		"sequelize": "^6.37.3",
 		"shelljs": "^0.8.5",
 		"typescript-transform-paths": "^3.4.7",
+		"uuid": "^10.0.0",
 		"winston": "^3.13.0"
 	},
 	"scripts": {
@@ -59,6 +61,7 @@
 		"@types/mongoose": "^5.11.97",
 		"@types/morgan": "^1.9.4",
 		"@types/node": "^18.11.18",
+		"@types/uuid": "^10.0.0",
 		"@typescript-eslint/eslint-plugin": "^5.62.0",
 		"@typescript-eslint/parser": "^5.62.0",
 		"eslint": "^8.57.0",

@@ -19,7 +19,7 @@ import { winstonLogger } from '@manoj19-github/microservice_shared_lib';
 import hpp from 'hpp';
 import compression from 'compression';
 import { ConnectDatabase } from './config/database.config';
-import { authMiddleware } from './middlewares/auth-middleware';
+import { authMiddleware } from './middlewares/auth.middleware';
 import { Channel } from 'amqplib';
 import { RabbitMQConfig } from './config/rabbitmq.config';
 config();
