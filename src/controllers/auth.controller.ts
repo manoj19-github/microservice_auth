@@ -6,6 +6,7 @@ import {
 	IEmailMessageDetails,
 	ServerError,
 	firstLetterUppercase,
+	isEmail,
 	lowerCase,
 	uploads
 } from '@manoj19-github/microservice_shared_lib';
@@ -16,6 +17,8 @@ import { EnvVariable } from '../config/envVariable.config';
 import { AuthProducerQueue } from '../queues/authProducer.queue';
 import { authChannel } from '..';
 import { StatusCodes } from 'http-status-codes';
+import AuthDataModel from 'src/schema/auth.schema';
+import lodash from 'lodash';
 
 export class AuthController {
 	public static async createUser(request: Request, response: Response, next: NextFunction) {
@@ -55,10 +58,82 @@ export class AuthController {
 					logMessage: 'Verify email message has been sent to notification service .'
 				});
 			const JWTToken: string = AuthService.signJWTToken({ userId: result._id, email: result.email ?? '', username: result.username ?? '' });
+			const userDetails = JSON.parse(JSON.stringify(result));
+			userDetails.password = null;
 			return response.status(StatusCodes.CREATED).json({
 				message: 'user created successfully',
-				user: result,
+				user: userDetails,
 				JWTToken
+			});
+		} catch (error) {
+			next(error);
+		}
+	}
+	public static async login(request: Request, response: Response, next: NextFunction) {
+		try {
+			const { username, password } = request.body;
+
+			const isValidEmail: boolean = isEmail(username);
+			const existingUser: any = !isValidEmail ? await AuthService.getUserByUsername(username) : await AuthService.getUserByEmail(username);
+
+			if (!existingUser) throw new BadRequestError(`Invalid credentials`, `login method error`);
+			const passwordMatch: boolean = await existingUser.authenticate(password);
+			if (!passwordMatch) throw new BadRequestError(`Invalid credentials`, `login method error`);
+			const jwtToken: string = AuthService.signJWTToken({
+				userId: existingUser._id ?? '',
+				username: existingUser.username ?? '',
+				email: existingUser.email ?? ''
+			});
+			const userDetails = JSON.parse(JSON.stringify(existingUser));
+			userDetails.password = null;
+
+			return response.status(StatusCodes.OK).json({ message: 'User login successfully', user: userDetails, token: jwtToken });
+		} catch (error) {
+			next(error);
+		}
+	}
+	public static async verifyEmail(request: Request, response: Response, next: NextFunction) {
+		try {
+			const { token } = request.body;
+			const isUserExists: IAuthDocument | null | undefined = await AuthService.getUserByPasswordToken(token);
+			if (!isUserExists) throw new BadRequestError('invalid token', 'user not exists');
+			await AuthService.updateVerifyEmail({
+				userId: isUserExists?._id ?? '',
+				emailVerified: true,
+				emailVerifiedToken: isUserExists.passwordResetToken ?? ''
+			});
+			const updatedUser: IAuthDocument | null | undefined = await AuthService.getAuthUserById(isUserExists?._id ?? '');
+			return response.status(StatusCodes.OK).json({ message: 'User updated successfully', user: updatedUser });
+		} catch (error) {
+			next(error);
+		}
+	}
+	public static async forgotPassword(request: Request, response: Response, next: NextFunction) {
+		try {
+			const { email } = request.body;
+			const existingUser: IAuthDocument | null | undefined = await AuthService.getUserByEmail(email);
+			if (!existingUser) throw new BadRequestError('Invalid credentials', 'please check user input');
+			const randomString: string = await Promise.resolve(crypto.randomBytes(64).toString('hex'));
+			const expiryDate: Date = new Date();
+			expiryDate.setHours(expiryDate.getHours() + 1);
+			await AuthService.updatePasswordToken({ userId: existingUser._id ?? '', token: randomString, tokenExpiration: expiryDate });
+			const resetLink: string = `${EnvVariable.CLIENT_URL}/reset_password?token=${randomString}`;
+			const messageDetails: IEmailMessageDetails = {
+				receiverEmail: existingUser.email ?? '',
+				resetLink,
+				username: existingUser?.username,
+				template: 'forgotPassword'
+			};
+			if (!!authChannel)
+				await AuthProducerQueue.publishDirectMessage({
+					channel: authChannel,
+					exchangeName: 'jobber-email-notification',
+					routingKey: 'auth-email',
+					message: JSON.stringify(messageDetails),
+					logMessage: 'Forgot password message sent to notification service'
+				});
+			return response.status(StatusCodes.OK).json({
+				message: 'Password reset link successfully'
 			});
 		} catch (error) {
 			next(error);

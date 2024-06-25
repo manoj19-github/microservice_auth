@@ -33,38 +33,29 @@ export class AuthService {
 		return userData;
 	}
 	public static async getUserByUsernameOrEmail(username: string, email: string): Promise<IAuthDocument | undefined | null> {
-		const userResult: IAuthDocument | undefined | null = await AuthDataModel.findOne(
-			{
-				$or: [{ username: firstLetterUppercase(username) }, { email: lowerCase(email) }]
-			},
-			{ password: -1 }
-		);
+		const userResult: IAuthDocument | undefined | null = await AuthDataModel.findOne({
+			$or: [{ username: firstLetterUppercase(username) }, { email: lowerCase(email) }]
+		});
 		return userResult;
 	}
 	public static async getUserByUsername(username: string): Promise<IAuthDocument | undefined | null> {
-		const userResult: IAuthDocument | undefined | null = await AuthDataModel.findOne(
-			{
-				username: firstLetterUppercase(username)
-			},
-			{ password: -1 }
-		);
+		const userResult: IAuthDocument | undefined | null = await AuthDataModel.findOne({
+			username: firstLetterUppercase(username)
+		});
 		return userResult;
 	}
 	public static async getUserByEmail(email: string): Promise<IAuthDocument | undefined | null> {
-		const userResult: IAuthDocument | undefined | null = await AuthDataModel.findOne({ email: lowerCase(email) }, { password: -1 });
+		const userResult: IAuthDocument | undefined | null = await AuthDataModel.findOne({ email: lowerCase(email) });
 		return userResult;
 	}
 	public static async getUserByEmailVerificationToken(token: string): Promise<IAuthDocument | undefined | null> {
-		const userResult: IAuthDocument | undefined | null = await AuthDataModel.findOne({ emailVerificationToken: token }, { password: -1 });
+		const userResult: IAuthDocument | undefined | null = await AuthDataModel.findOne({ emailVerificationToken: token });
 		return userResult;
 	}
 	public static async getUserByPasswordToken(token: string): Promise<IAuthDocument | undefined | null> {
-		const userResult: IAuthDocument | undefined | null = await AuthDataModel.findOne(
-			{
-				$and: [{ passwordResetToken: token }, { passwordResetExpires: { $gt: new Date() } }]
-			},
-			{ password: -1 }
-		);
+		const userResult: IAuthDocument | undefined | null = await AuthDataModel.findOne({
+			$and: [{ passwordResetToken: token }, { passwordResetExpires: { $gt: new Date() } }]
+		});
 		return userResult;
 	}
 	public static async updateVerifyEmail({
@@ -86,7 +77,7 @@ export class AuthService {
 			}
 		);
 	}
-	public static async updatePasswordToken({ userId, token, tokenExpiration }: { userId: string; token: boolean; tokenExpiration: Date }) {
+	public static async updatePasswordToken({ userId, token, tokenExpiration }: { userId: string; token: string; tokenExpiration: Date }) {
 		await AuthDataModel.updateOne(
 			{ _id: userId },
 			{
