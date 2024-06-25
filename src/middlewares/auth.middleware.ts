@@ -2,33 +2,34 @@ import { BadRequestError, IAuthPayload, NotAuthorizedError } from '@manoj19-gith
 import { NextFunction, Response, Request } from 'express';
 import JWT from 'jsonwebtoken';
 import { EnvVariable } from '../config/envVariable.config';
+import { StatusCodes } from 'http-status-codes';
 
-class AuthMiddleware {
-	public verifyUser(request: Request, res: Response, next: NextFunction): void {
+export class AuthMiddleware {
+	public static verifyUser(request: Request, res: Response, next: NextFunction) {
 		try {
 			if (!!request.headers.authorization) {
 				const token = request.headers.authorization?.split(' ')?.[1];
 				const payload: IAuthPayload = JWT.verify(token, `${EnvVariable.JWT_TOKEN}`) as IAuthPayload;
 				request.currentUser = payload;
+				next();
+			} else {
+				return res.status(StatusCodes.UNAUTHORIZED).json({ message: 'please login first and then try again' });
 			}
-			next();
 		} catch (error) {
 			console.log('error: ', error);
-			throw new NotAuthorizedError('Token not avilable. Please login again', 'Gateway service verifyuser method error');
+			return res.status(StatusCodes.UNAUTHORIZED).json({ message: 'please login first and then try again' });
 		}
 	}
 
 	// check authentication
-	public checkAuthentication(request: Request, res: Response, next: NextFunction): void {
+	public static checkAuthentication(request: Request, res: Response, next: NextFunction) {
 		try {
-			if (!request?.currentUser)
-				throw new BadRequestError('Authentication is required to access this route', 'gateway service check authentication method error');
+			if (!request?.currentUser) return res.status(StatusCodes.UNAUTHORIZED).json({ message: 'please login first and then try again' });
 
 			next();
 		} catch (error) {
 			console.log('error: ', error);
-			throw new NotAuthorizedError('Token not avilable. Please login again', 'Gateway service verifyuser method error');
+			return res.status(StatusCodes.UNAUTHORIZED).json({ message: 'please login first and then try again' });
 		}
 	}
 }
-export const authMiddleware: AuthMiddleware = new AuthMiddleware();

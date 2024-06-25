@@ -139,4 +139,109 @@ export class AuthController {
 			next(error);
 		}
 	}
+	public static async resetPassword(request: Request, response: Response, next: NextFunction) {
+		try {
+			const { password, confirmPassword } = request.body;
+			const { token } = request.params;
+			if (password !== confirmPassword) throw new BadRequestError('Password do not match', 'please try again later');
+			const existingUser: IAuthDocument | null | undefined = await AuthService.getUserByPasswordToken(token);
+			if (!existingUser) throw new BadRequestError('Reset token has expired', 'please try again later');
+			await AuthService.updatePassword({ userId: existingUser?._id ?? '', password });
+			const expiryDate: Date = new Date();
+			expiryDate.setHours(expiryDate.getHours() + 1);
+			const randomString: string = await Promise.resolve(crypto.randomBytes(64).toString('hex'));
+			const resetLink: string = `${EnvVariable.CLIENT_URL}/reset_password?token=${randomString}`;
+			const messageDetails: IEmailMessageDetails = {
+				username: existingUser?.username,
+				template: 'resetPasswordSuccess'
+			};
+			if (!!authChannel)
+				await AuthProducerQueue.publishDirectMessage({
+					channel: authChannel,
+					exchangeName: 'jobber-email-notification',
+					routingKey: 'auth-email',
+					message: JSON.stringify(messageDetails),
+					logMessage: 'reset password message sent to notification service'
+				});
+			return response.status(StatusCodes.OK).json({
+				message: 'Password successfully updated'
+			});
+		} catch (error) {
+			console.log(error);
+			next(error);
+		}
+	}
+	public static async changePassword(request: Request, response: Response, next: NextFunction) {
+		try {
+			const { currentPassword, newPassword } = request.body;
+			const existingUser: IAuthDocument | null | undefined = await AuthService.getUserByUsername(`${request.currentUser?.username}`);
+			if (!existingUser) throw new BadRequestError('invalid password', 'please try again later');
+			await AuthService.updatePassword({ userId: existingUser?._id ?? '', password: newPassword });
+			const messageDetails: IEmailMessageDetails = {
+				username: existingUser?.username,
+				template: 'resetPasswordSuccess'
+			};
+			if (!!authChannel)
+				await AuthProducerQueue.publishDirectMessage({
+					channel: authChannel,
+					exchangeName: 'jobber-email-notification',
+					routingKey: 'auth-email',
+					message: JSON.stringify(messageDetails),
+					logMessage: 'password change message sent to notification service'
+				});
+			return response.status(StatusCodes.OK).json({
+				message: 'Password successfully updated'
+			});
+		} catch (error) {
+			console.log(error);
+			next(error);
+		}
+	}
+	public static async getCurrentUser(request: Request, response: Response, next: NextFunction) {
+		try {
+			const existingUser: IAuthDocument | null | undefined = await AuthService.getAuthUserById(request.currentUser?._id ?? '');
+			if (!!existingUser && Object.keys(existingUser)?.length > 0)
+				return response.status(StatusCodes.OK).json({
+					userInfo: existingUser
+				});
+			return response.status(StatusCodes.UNAUTHORIZED).json({
+				userInfo: null
+			});
+		} catch (error) {
+			console.log(error);
+			next(error);
+		}
+	}
+	public static async resendEmail(request: Request, response: Response, next: NextFunction) {
+		try {
+			const { email, userId } = request.body;
+			const userExists: IAuthDocument | null | undefined = await AuthService.getUserByEmail(lowerCase(email));
+			if (!userExists) throw new BadRequestError('Email is invalid', 'currentUser resend email');
+			const randomString: string = await Promise.resolve(crypto.randomBytes(64).toString('hex'));
+			const verifyLink: string = `${EnvVariable.CLIENT_URL}/confirm_email?v_token=${randomString}`;
+			await AuthService.updateVerifyEmail({ userId: userExists?._id ?? '', emailVerified: false, emailVerifiedToken: randomString });
+			const messageDetails: IEmailMessageDetails = {
+				receiverEmail: userExists.email ?? '',
+				verifyLink,
+				template: 'verifyEmail'
+			};
+			if (!!authChannel)
+				await AuthProducerQueue.publishDirectMessage({
+					channel: authChannel,
+					exchangeName: `jobber-email-notification`,
+					routingKey: `auth-email`,
+					message: JSON.stringify(messageDetails),
+					logMessage: `Verify email message has been sent to notification service.`
+				});
+			const updatedUserDetails: IAuthDocument | null | undefined = await AuthService.getAuthUserById(userId);
+			const updatedResult = JSON.parse(JSON.stringify(updatedUserDetails));
+			updatedResult.password = null;
+			return response.status(StatusCodes.OK).json({
+				user: updatedResult,
+				message: 'email verification sent'
+			});
+		} catch (error) {
+			next(error);
+		}
+	}
 }

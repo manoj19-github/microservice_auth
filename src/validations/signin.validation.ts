@@ -21,3 +21,15 @@ export const signinValidation: ObjectSchema = Joi.object().keys({
 		'string.empty': 'password is a required field'
 	})
 });
+
+export const resendEmailValidation: ObjectSchema = Joi.object().keys({
+	email: Joi.string().email().required().messages({
+		'string.base': 'email must be a type string',
+		'string.email': 'Invalid email',
+		'string.empty': 'email is a required field'
+	}),
+	userId: Joi.string().required().messages({
+		'string.base': 'password must be a type string',
+		'string.empty': 'password is a required field'
+	})
+});
